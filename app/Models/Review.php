@@ -15,6 +15,7 @@ class Review extends Model
         'kos_id',
         'user_id',
         'comment',
+        'rating'
     ];
 
     public function kos()
@@ -27,8 +28,9 @@ class Review extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function replies()
+    // 🔹 Relasi ke balasan dari owner (satu review hanya punya satu balasan)
+    public function reply()
     {
-        return $this->hasMany(ReviewReply::class, 'review_id');
+        return $this->hasOne(ReviewReply::class, 'review_id');
     }
 }

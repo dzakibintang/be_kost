@@ -22,31 +22,42 @@ class Kos extends Model
         'available_rooms',
     ];
 
-    // Relasi: Kos dimiliki oleh 1 User (owner)
-    public function owner()
+    /**
+     * 🔹 Relasi: Kos dimiliki oleh satu User (owner)
+     */
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relasi: Kos punya banyak gambar
+    /**
+     * 🔹 Relasi: Kos punya banyak gambar
+     */
     public function images()
     {
         return $this->hasMany(KosImage::class, 'kos_id');
     }
 
-    // Relasi: Kos punya banyak fasilitas
+    /**
+     * 🔹 Relasi: Kos punya banyak fasilitas (many-to-many)
+     * lewat tabel pivot kos_facility
+     */
     public function facilities()
     {
-        return $this->hasMany(KosFacility::class, 'kos_id');
+        return $this->belongsToMany(Facility::class, 'kos_facility', 'kos_id', 'facility_id');
     }
 
-    // Relasi: Kos punya banyak review
+    /**
+     * 🔹 Relasi: Kos punya banyak review
+     */
     public function reviews()
     {
         return $this->hasMany(Review::class, 'kos_id');
     }
 
-    // Relasi: Kos punya banyak booking
+    /**
+     * 🔹 Relasi: Kos punya banyak booking
+     */
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'kos_id');

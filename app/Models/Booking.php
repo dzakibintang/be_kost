@@ -17,14 +17,16 @@ class Booking extends Model
         'start_date',
         'end_date',
         'status',
-        'approved_at',
+        'approved_at'
     ];
 
+    // Relasi ke tabel Kos
     public function kos()
     {
         return $this->belongsTo(Kos::class, 'kos_id');
     }
 
+    // Relasi ke tabel User (society)
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

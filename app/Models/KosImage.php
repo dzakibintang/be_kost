@@ -16,8 +16,17 @@ class KosImage extends Model
         'file',
     ];
 
+    // 🔹 Relasi ke model Kos
     public function kos()
     {
         return $this->belongsTo(Kos::class, 'kos_id');
+    }
+
+    // 🔹 Tambahan biar frontend bisa langsung ambil URL lengkap
+    protected $appends = ['url'];
+
+    public function getUrlAttribute()
+    {
+        return asset($this->file);
     }
 }

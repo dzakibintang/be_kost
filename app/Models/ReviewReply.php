@@ -14,7 +14,7 @@ class ReviewReply extends Model
     protected $fillable = [
         'review_id',
         'owner_id',
-        'reply',
+        'reply'
     ];
 
     public function review()
