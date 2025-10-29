@@ -82,6 +82,7 @@ Route::middleware(['auth:api', 'role:society'])->prefix('society')->group(functi
     Route::get('/bookings', [BookingController::class, 'myBookings']); // lihat semua booking milik user
     Route::get('/booking/{id}', [BookingController::class, 'show']); // lihat detail booking
     Route::get('/booking/{id}/nota', [BookingController::class, 'printNota']); // cetak bukti nota
+    Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel']);// batalkan booking
 });
 
 /*

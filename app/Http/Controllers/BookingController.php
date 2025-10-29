@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Schema;
-use Barryvdh\DomPDF\Facade\Pdf; // <--- tambahkan ini
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
@@ -199,7 +199,14 @@ class BookingController extends Controller
                 return response()->json(['message' => 'Booking tidak ditemukan'], 404);
             }
 
-            // Generate PDF pakai view Blade
+            // 🔒 Hanya bisa cetak jika status = 'accept'
+            if ($booking->status !== 'accept') {
+                return response()->json([
+                    'message' => 'Nota hanya bisa dicetak jika booking telah diterima (status: accept)',
+                    'status_booking' => $booking->status
+                ], 403);
+            }
+
             $pdf = Pdf::loadView('pdf.booking_nota', compact('booking'))
                 ->setPaper('a4', 'portrait');
 
@@ -207,6 +214,57 @@ class BookingController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal mencetak nota booking',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ✅ Society batalkan booking (hanya jika pending)
+    public function cancel($id)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+
+            $booking = Booking::where('user_id', $user->id)->find($id);
+
+            if (!$booking) {
+                return response()->json(['message' => 'Booking tidak ditemukan'], 404);
+            }
+
+            switch ($booking->status) {
+                case 'accept':
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Booking sudah disetujui, tidak dapat dibatalkan.'
+                    ], 403);
+
+                case 'reject':
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Booking sudah ditolak oleh owner, tidak dapat dibatalkan.'
+                    ], 403);
+
+                case 'cancelled':
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Booking sudah dibatalkan sebelumnya.'
+                    ], 403);
+            }
+
+            if ($booking->status === 'pending') {
+                $booking->update(['status' => 'cancelled']);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Booking berhasil dibatalkan',
+                    'data' => $booking
+                ]);
+            }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal membatalkan booking',
                 'error' => $e->getMessage()
             ], 500);
         }
