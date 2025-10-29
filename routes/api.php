@@ -10,6 +10,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewReplyController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\FacilityController; // ✅ tambahkan ini
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +61,12 @@ Route::middleware(['auth:api', 'role:owner'])->prefix('owner')->group(function (
     // ✅ OWNER PROFILE (lihat & update profil)
     Route::get('/profile', [OwnerController::class, 'show']);
     Route::put('/profile', [OwnerController::class, 'update']);
+
+    // ✅ FACILITIES (CRUD)
+    Route::get('/facilities', [FacilityController::class, 'index']);
+    Route::post('/facilities', [FacilityController::class, 'store']);
+    Route::put('/facilities/{id}', [FacilityController::class, 'update']);
+    Route::delete('/facilities/{id}', [FacilityController::class, 'destroy']);
 });
 
 /*
@@ -82,7 +89,7 @@ Route::middleware(['auth:api', 'role:society'])->prefix('society')->group(functi
     Route::get('/bookings', [BookingController::class, 'myBookings']); // lihat semua booking milik user
     Route::get('/booking/{id}', [BookingController::class, 'show']); // lihat detail booking
     Route::get('/booking/{id}/nota', [BookingController::class, 'printNota']); // cetak bukti nota
-    Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel']);// batalkan booking
+    Route::delete('/booking/{id}/cancel', [BookingController::class, 'cancel']); // batalkan booking
 });
 
 /*
